@@ -17,22 +17,29 @@ export default function MoushikiResult({ result }) {
           天中殺: <strong style={{color: 'var(--accent-red)'}}>{tenchuusatsu}</strong>
         </p>
         <div className="grid-4" style={{ gap: '1rem' }}>
-          <div className="card kanshi-box">
-            <span className="kanshi-label">時柱</span>
-            <span className="kanshi-char">{inSen.time || '不明'}</span>
-          </div>
-          <div className="card kanshi-box">
-            <span className="kanshi-label">日柱</span>
-            <span className="kanshi-char">{inSen.day}</span>
-          </div>
-          <div className="card kanshi-box">
-            <span className="kanshi-label">月柱</span>
-            <span className="kanshi-char">{inSen.month}</span>
-          </div>
-          <div className="card kanshi-box">
-            <span className="kanshi-label">年柱</span>
-            <span className="kanshi-char">{inSen.year}</span>
-          </div>
+          {[
+            { label: '時柱', char: inSen.time || '不明', gogyo: inSen.timeGogyo, zoukan: inSen.timeZoukan },
+            { label: '日柱', char: inSen.day, gogyo: inSen.dayGogyo, zoukan: inSen.dayZoukan },
+            { label: '月柱', char: inSen.month, gogyo: inSen.monthGogyo, zoukan: inSen.monthZoukan },
+            { label: '年柱', char: inSen.year, gogyo: inSen.yearGogyo, zoukan: inSen.yearZoukan }
+          ].map((col, idx) => (
+            <div key={idx} className="card kanshi-box">
+              <span className="kanshi-label">{col.label}</span>
+              <span className="kanshi-char">{col.char}</span>
+              {col.char !== '不明' && (
+                <div className="kanshi-details" style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--text-light)', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                    <span>五行:</span>
+                    <span style={{color: 'var(--accent-blue)'}}>{col.gogyo?.gan} / {col.gogyo?.zhi}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>蔵干:</span>
+                    <span style={{color: 'var(--accent-gold)'}}>{col.zoukan}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 

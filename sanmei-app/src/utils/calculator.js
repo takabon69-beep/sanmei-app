@@ -45,20 +45,29 @@ function getTenStar(dayGan, targetGan) {
   return '';
 }
 
-// 十二大従星の簡易算出ロジック（日干と対象の十二支から）
-// ※算命学の複雑なロジックを簡略化しています
-const TWELVE_STARS_MAP = {
-  '木+': ['天恍星', '天貴星', '天印星', '天庫星', '天極星', '天馳星', '天報星', '天禄星', '天南星', '天将星', '天堂星', '天胡星'],
-  // 実際はもっと詳細なマッピングが存在しますが、簡易実装として
+const TWELVE_STAR_MATRIX = {
+  // 十二支の順（子、丑、寅、卯、辰、巳、午、未、申、酉、戌、亥）に対応する十二従星
+  '甲': ['天恍星', '天南星', '天禄星', '天将星', '天堂星', '天胡星', '天極星', '天庫星', '天馳星', '天報星', '天印星', '天貴星'],
+  '乙': ['天胡星', '天堂星', '天将星', '天禄星', '天南星', '天恍星', '天貴星', '天印星', '天報星', '天馳星', '天庫星', '天極星'],
+  '丙': ['天報星', '天印星', '天貴星', '天恍星', '天南星', '天禄星', '天将星', '天堂星', '天胡星', '天極星', '天庫星', '天馳星'],
+  '丁': ['天馳星', '天庫星', '天極星', '天胡星', '天堂星', '天将星', '天禄星', '天南星', '天恍星', '天貴星', '天印星', '天報星'],
+  '戊': ['天報星', '天印星', '天貴星', '天恍星', '天南星', '天禄星', '天将星', '天堂星', '天胡星', '天極星', '天庫星', '天馳星'],
+  '己': ['天馳星', '天庫星', '天極星', '天胡星', '天堂星', '天将星', '天禄星', '天南星', '天恍星', '天貴星', '天印星', '天報星'],
+  '庚': ['天極星', '天庫星', '天馳星', '天報星', '天印星', '天貴星', '天恍星', '天南星', '天禄星', '天将星', '天堂星', '天胡星'],
+  '辛': ['天貴星', '天印星', '天報星', '天馳星', '天庫星', '天極星', '天胡星', '天堂星', '天将星', '天禄星', '天南星', '天恍星'],
+  '壬': ['天将星', '天堂星', '天胡星', '天極星', '天庫星', '天馳星', '天報星', '天印星', '天貴星', '天恍星', '天南星', '天禄星'],
+  '癸': ['天禄星', '天南星', '天恍星', '天貴星', '天印星', '天報星', '天馳星', '天庫星', '天極星', '天胡星', '天堂星', '天将星']
 };
 
 function getTwelveStar(dayGan, zhi) {
   if (!dayGan || !zhi) return '';
-  // 簡易実装（本格的なマップが必要ですが、モックとして固定値を返します。実運用では詳細な判定を実装します）
-  // 本来は dayGanごとに各支に対応する星が決まります
-  const mockStars = ['天貴星', '天恍星', '天南星', '天禄星', '天将星', '天堂星', '天胡星', '天極星', '天庫星', '天馳星', '天報星', '天印星'];
-  const zhiIndex = Object.keys(ZHI_ELEMENTS).indexOf(zhi);
-  return mockStars[zhiIndex % mockStars.length] || '';
+  const zhiNames = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+  const zhiIndex = zhiNames.indexOf(zhi);
+  if (zhiIndex === -1) return '';
+  
+  const starsArray = TWELVE_STAR_MATRIX[dayGan];
+  if (!starsArray) return '';
+  return starsArray[zhiIndex];
 }
 
 export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTimeUnknown) {
@@ -144,12 +153,41 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
       });
   }
 
+  const getGogyo = (text) => {
+    if (text === '不明' || !text) return { gan: '不明', zhi: '不明' };
+    const fg = text.charAt(0);
+    const sg = text.charAt(1);
+    const fEle = GAN_ELEMENTS[fg];
+    const sEle = ZHI_ELEMENTS[sg];
+    return {
+      gan: fEle ? `${fEle.elem}(${fEle.polar})` : '',
+      zhi: sEle ? `${sEle.elem}(sEle.polar === '+' ? '陽' : '陰')` : '' // will fix strings properly
+    };
+  };
+
+  const getEleStr = (str, isGan) => {
+    if (!str || str === '不明') return '-';
+    // isGan = true is Heavenly Stem, else Earthly Branch
+    const e = isGan ? GAN_ELEMENTS[str] : ZHI_ELEMENTS[str];
+    if (!e) return '-';
+    const polarStr = e.polar === '+' ? '+' : '-';
+    return `${e.elem}(${polarStr})`;
+  };
+
   return {
     inSen: {
       year: yearGan + yearZhi,
       month: monthGan + monthZhi,
       day: dayGan + dayZhi,
-      time: isTimeUnknown ? '不明' : (timeGan + timeZhi)
+      time: isTimeUnknown ? '不明' : (timeGan + timeZhi),
+      yearGogyo: { gan: getEleStr(yearGan, true), zhi: getEleStr(yearZhi, false) },
+      monthGogyo: { gan: getEleStr(monthGan, true), zhi: getEleStr(monthZhi, false) },
+      dayGogyo: { gan: getEleStr(dayGan, true), zhi: getEleStr(dayZhi, false) },
+      timeGogyo: { gan: getEleStr(isTimeUnknown ? '' : timeGan, true), zhi: getEleStr(isTimeUnknown ? '' : timeZhi, false) },
+      yearZoukan: eightChar.getYearHideGan().join('・'),
+      monthZoukan: eightChar.getMonthHideGan().join('・'),
+      dayZoukan: eightChar.getDayHideGan().join('・'),
+      timeZoukan: isTimeUnknown ? '不明' : eightChar.getTimeHideGan().join('・')
     },
     tenchuusatsu: tenShenZhi,
     youSen: {
