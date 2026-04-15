@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube URL Search Tool</title>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>YouTube URL Search Tool</h1>
+            <p>キーワードで検索して、NotebookLM用のURLリストを作成します</p>
+        </header>
+
+        <main>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="検索キーワードを入力..." aria-label="検索キーワード">
+                <button id="searchBtn">検索</button>
+            </div>
+
+            <div id="loading" class="hidden">検索中...</div>
+
+            <div id="resultContainer" class="hidden">
+                <div class="actions">
+                    <button id="copyAllBtn" class="primary">URL一覧をコピー</button>
+                </div>
+                <div id="resultsList"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 YouTube Search Tool</p>
+        </footer>
+    </div>
+    <script type="module" src="/main.js"></script>
+</body>
+</html>
