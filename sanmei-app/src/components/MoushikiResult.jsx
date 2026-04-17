@@ -119,20 +119,24 @@ export default function MoushikiResult({ result }) {
       <div className="grid-2">
         <div className="glass-panel" style={{ overflow: 'auto' }}>
           <h3 className="result-title">大運（10年運）</h3>
-          <table className="luck-table">
+          <table className="luck-table" style={{ width: '100%', textAlign: 'center', borderCollapse: 'collapse' }}>
             <thead>
-              <tr>
-                <th>年齢</th>
-                <th>年</th>
-                <th>干支</th>
+              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+                <th style={{ padding: '8px' }}>年齢</th>
+                <th style={{ padding: '8px' }}>年</th>
+                <th style={{ padding: '8px' }}>干支</th>
+                <th style={{ padding: '8px' }}>主星</th>
+                <th style={{ padding: '8px' }}>従星</th>
               </tr>
             </thead>
             <tbody>
               {daYun.map((yun, i) => (
-                <tr key={i}>
-                  <td>{yun.startAge}〜{yun.endAge}歳</td>
-                  <td>{yun.year}〜</td>
-                  <td>{yun.ganzhi}</td>
+                <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                  <td style={{ padding: '8px' }}>{yun.startAge}〜{yun.endAge}歳</td>
+                  <td style={{ padding: '8px' }}>{yun.year}〜</td>
+                  <td style={{ padding: '8px' }}>{yun.ganzhi}</td>
+                  <td style={{ padding: '8px', color: 'var(--accent-gold)' }}>{yun.tenStar}</td>
+                  <td style={{ padding: '8px', color: 'var(--accent-blue)' }}>{yun.twelveStar}</td>
                 </tr>
               ))}
             </tbody>
@@ -141,18 +145,22 @@ export default function MoushikiResult({ result }) {
 
         <div className="glass-panel" style={{ overflow: 'auto' }}>
           <h3 className="result-title">年運（流年）</h3>
-          <table className="luck-table">
+          <table className="luck-table" style={{ width: '100%', textAlign: 'center', borderCollapse: 'collapse' }}>
             <thead>
-              <tr>
-                <th>年</th>
-                <th>干支</th>
+              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+                <th style={{ padding: '8px' }}>年</th>
+                <th style={{ padding: '8px' }}>干支</th>
+                <th style={{ padding: '8px' }}>主星</th>
+                <th style={{ padding: '8px' }}>従星</th>
               </tr>
             </thead>
             <tbody>
               {niuNian.map((nian, i) => (
-                <tr key={i}>
-                  <td>{nian.year}年</td>
-                  <td>{nian.ganzhi}</td>
+                <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                  <td style={{ padding: '8px' }}>{nian.year}年</td>
+                  <td style={{ padding: '8px' }}>{nian.ganzhi}</td>
+                  <td style={{ padding: '8px', color: 'var(--accent-gold)' }}>{nian.tenStar}</td>
+                  <td style={{ padding: '8px', color: 'var(--accent-blue)' }}>{nian.twelveStar}</td>
                 </tr>
               ))}
             </tbody>

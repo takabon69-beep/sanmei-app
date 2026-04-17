@@ -108,12 +108,19 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
 
   // 大運の取得
   const daYunList = yun.getDaYun();
-  const daYunArray = daYunList.map(dy => ({
-    startAge: dy.getStartAge(),
-    endAge: dy.getEndAge(),
-    year: dy.getStartYear(),
-    ganzhi: dy.getGanZhi()
-  })).slice(0, 10); // 10個取得
+  const daYunArray = daYunList.map(dy => {
+    const gz = dy.getGanZhi();
+    const gan = gz.charAt(0);
+    const zhi = gz.charAt(1);
+    return {
+      startAge: dy.getStartAge(),
+      endAge: dy.getEndAge(),
+      year: dy.getStartYear(),
+      ganzhi: gz,
+      tenStar: getTenStar(dayGan, gan),
+      twelveStar: getTwelveStar(dayGan, zhi)
+    };
+  }).slice(0, 10); // 10個取得
 
   // 年運の取得 (流年) 向こう10年
   const currentYear = new Date().getFullYear();
@@ -121,9 +128,14 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
   for(let i=0; i<10; i++){
       const ySolar = Solar.fromYmdHms(currentYear + i, 1, 1, 12, 0, 0);
       const yLunar = ySolar.getLunar();
+      const gz = yLunar.getYearInGanZhi();
+      const gan = gz.charAt(0);
+      const zhi = gz.charAt(1);
       liuNianArray.push({
           year: currentYear + i,
-          ganzhi: yLunar.getYearInGanZhi()
+          ganzhi: gz,
+          tenStar: getTenStar(dayGan, gan),
+          twelveStar: getTwelveStar(dayGan, zhi)
       });
   }
 
