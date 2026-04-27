@@ -159,11 +159,11 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
 
   // 陽占（算命学）の星算出
   const leftShoulder = getTwelveStar(dayGan, yearZhi); // 初年期
-  const head = getTenStar(dayGan, monthGan); // 月干 (親・目上)
-  const leftHand = getTenStar(dayGan, yearGan); // 年干 (兄弟・友人)
-  const chest = getTenStar(dayGan, monthMainZoukan); // 月支蔵干 (自分自身・本質)
-  const rightHand = getTenStar(dayGan, dayMainZoukan); // 日支蔵干 (配偶者)
-  const belly = getTenStar(dayGan, yearMainZoukan); // 年支蔵干 (子供・目下)
+  const head = getTenStar(dayGan, yearGan); // 年干 (頭・親・目上)
+  const leftHand = getTenStar(dayGan, yearMainZoukan); // 年支蔵干 (左手・兄弟・友人)
+  const chest = getTenStar(dayGan, monthMainZoukan); // 月支蔵干 (胸・自分自身・本質)
+  const rightHand = getTenStar(dayGan, dayMainZoukan); // 日支蔵干 (右手・配偶者)
+  const belly = getTenStar(dayGan, monthGan); // 月干 (腹・子供・目下)
   const rightFoot = getTwelveStar(dayGan, monthZhi); // 中年期
   const leftFoot = getTwelveStar(dayGan, dayZhi); // 晩年期
 
