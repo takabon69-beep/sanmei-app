@@ -149,16 +149,6 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
   const emptyZhi = lunar.getDayShengXiao(); // 簡易：空亡の取得ロジックが必要、lunar-jsにはdayXunKongなどがある
   const tenShenZhi = eightChar.getDayXunKong() || '不明'; // 戌亥天中殺など
 
-  // 陽占（算命学）の星算出
-  const leftShoulder = getTwelveStar(dayGan, yearZhi); // 初年期
-  const leftHand = getTenStar(dayGan, yearGan);
-  const head = getTenStar(dayGan, monthGan); // 月干
-  const chest = getTenStar(dayGan, monthGan); // 本来は月支蔵干などですが簡易化
-  const rightHand = getTenStar(dayGan, yearGan); // 本来は日支蔵干等
-  const rightFoot = getTwelveStar(dayGan, monthZhi); // 中年期
-  const belly = getTenStar(dayGan, dayGan); // 本来の計算が必要
-  const leftFoot = getTwelveStar(dayGan, dayZhi); // 晩年期
-
   const prevJie = lunar.getPrevJie();
   const daysPassed = solar.getJulianDay() - prevJie.getSolar().getJulianDay();
   
@@ -166,6 +156,16 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
   const monthMainZoukan = getActiveZoukan(monthZhi, daysPassed);
   const dayMainZoukan = getActiveZoukan(dayZhi, daysPassed);
   const timeMainZoukan = isTimeUnknown ? '' : getActiveZoukan(timeZhi, daysPassed);
+
+  // 陽占（算命学）の星算出
+  const leftShoulder = getTwelveStar(dayGan, yearZhi); // 初年期
+  const head = getTenStar(dayGan, monthGan); // 月干 (親・目上)
+  const leftHand = getTenStar(dayGan, yearGan); // 年干 (兄弟・友人)
+  const chest = getTenStar(dayGan, monthMainZoukan); // 月支蔵干 (自分自身・本質)
+  const rightHand = getTenStar(dayGan, dayMainZoukan); // 日支蔵干 (配偶者)
+  const belly = getTenStar(dayGan, yearMainZoukan); // 年支蔵干 (子供・目下)
+  const rightFoot = getTwelveStar(dayGan, monthZhi); // 中年期
+  const leftFoot = getTwelveStar(dayGan, dayZhi); // 晩年期
 
   const shichuPillars = [
     {
