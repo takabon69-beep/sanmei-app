@@ -96,6 +96,31 @@ function getShichuJuniun(dayGan, zhi) {
   const sanmeiStar = getTwelveStar(dayGan, zhi);
   return SHICHU_TWELVE_STAR_MAP[sanmeiStar] || '';
 }
+
+// 蔵干月律分野表（阿部泰山派ベース）
+const ZOUKAN_TABLE = {
+  '子': [{d:10, c:'壬'}, {d:31, c:'癸'}],
+  '丑': [{d:9, c:'癸'}, {d:12, c:'辛'}, {d:31, c:'己'}],
+  '寅': [{d:7, c:'戊'}, {d:14, c:'丙'}, {d:31, c:'甲'}],
+  '卯': [{d:10, c:'甲'}, {d:31, c:'乙'}],
+  '辰': [{d:9, c:'乙'}, {d:12, c:'癸'}, {d:31, c:'戊'}],
+  '巳': [{d:7, c:'戊'}, {d:14, c:'庚'}, {d:31, c:'丙'}],
+  '午': [{d:10, c:'丙'}, {d:19, c:'己'}, {d:31, c:'丁'}],
+  '未': [{d:9, c:'丁'}, {d:12, c:'乙'}, {d:31, c:'己'}],
+  '申': [{d:7, c:'戊'}, {d:14, c:'壬'}, {d:31, c:'庚'}],
+  '酉': [{d:10, c:'庚'}, {d:31, c:'辛'}],
+  '戌': [{d:9, c:'辛'}, {d:12, c:'丁'}, {d:31, c:'戊'}],
+  '亥': [{d:7, c:'戊'}, {d:14, c:'甲'}, {d:31, c:'壬'}]
+};
+
+function getActiveZoukan(zhi, daysPassed) {
+  if (!ZOUKAN_TABLE[zhi]) return '';
+  const parts = ZOUKAN_TABLE[zhi];
+  for (let p of parts) {
+    if (daysPassed <= p.d) return p.c;
+  }
+  return parts[parts.length - 1].c;
+}
 // ----------------------------
 
 export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTimeUnknown) {
@@ -134,16 +159,13 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
   const belly = getTenStar(dayGan, dayGan); // 本来の計算が必要
   const leftFoot = getTwelveStar(dayGan, dayZhi); // 晩年期
 
-  // 四柱推命（命式）の算出
-  const yearHideGan = eightChar.getYearHideGan();
-  const monthHideGan = eightChar.getMonthHideGan();
-  const dayHideGan = eightChar.getDayHideGan();
-  const timeHideGan = isTimeUnknown ? [] : eightChar.getTimeHideGan();
+  const prevJie = lunar.getPrevJie();
+  const daysPassed = solar.getJulianDay() - prevJie.getSolar().getJulianDay();
   
-  const yearMainZoukan = yearHideGan[0] || '';
-  const monthMainZoukan = monthHideGan[0] || '';
-  const dayMainZoukan = dayHideGan[0] || '';
-  const timeMainZoukan = isTimeUnknown ? '' : (timeHideGan[0] || '');
+  const yearMainZoukan = getActiveZoukan(yearZhi, daysPassed);
+  const monthMainZoukan = getActiveZoukan(monthZhi, daysPassed);
+  const dayMainZoukan = getActiveZoukan(dayZhi, daysPassed);
+  const timeMainZoukan = isTimeUnknown ? '' : getActiveZoukan(timeZhi, daysPassed);
 
   const shichuPillars = [
     {
