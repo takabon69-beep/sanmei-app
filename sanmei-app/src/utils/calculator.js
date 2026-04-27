@@ -232,7 +232,7 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
   const currentYear = new Date().getFullYear();
   let liuNianArray = [];
   for(let i=0; i<10; i++){
-      const ySolar = Solar.fromYmdHms(currentYear + i, 1, 1, 12, 0, 0);
+      const ySolar = Solar.fromYmdHms(currentYear + i, 6, 1, 12, 0, 0);
       const yLunar = ySolar.getLunar();
       const gz = yLunar.getYearInGanZhi();
       const gan = gz.charAt(0);
