@@ -140,10 +140,10 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
   const dayHideGan = eightChar.getDayHideGan();
   const timeHideGan = isTimeUnknown ? [] : eightChar.getTimeHideGan();
   
-  const yearMainZoukan = yearHideGan.slice(-1)[0] || '';
-  const monthMainZoukan = monthHideGan.slice(-1)[0] || '';
-  const dayMainZoukan = dayHideGan.slice(-1)[0] || '';
-  const timeMainZoukan = isTimeUnknown ? '' : (timeHideGan.slice(-1)[0] || '');
+  const yearMainZoukan = yearHideGan[0] || '';
+  const monthMainZoukan = monthHideGan[0] || '';
+  const dayMainZoukan = dayHideGan[0] || '';
+  const timeMainZoukan = isTimeUnknown ? '' : (timeHideGan[0] || '');
 
   const shichuPillars = [
     {
