@@ -70,6 +70,34 @@ function getTwelveStar(dayGan, zhi) {
   return starsArray[zhiIndex];
 }
 
+// -------- 四柱推命用 --------
+const SHICHU_TEN_STAR_MAP = {
+  '貫索星': '比肩', '石門星': '劫財',
+  '鳳閣星': '食神', '調舒星': '傷官',
+  '禄存星': '偏財', '司禄星': '正財',
+  '車騎星': '偏官', '牽牛星': '正官',
+  '龍高星': '偏印', '玉堂星': '印綬'
+};
+
+const SHICHU_TWELVE_STAR_MAP = {
+  '天報星': '胎', '天印星': '養', '天貴星': '長生', '天恍星': '沐浴',
+  '天南星': '冠帯', '天禄星': '建禄', '天将星': '帝旺', '天堂星': '衰',
+  '天胡星': '病', '天極星': '死', '天庫星': '墓', '天馳星': '絶'
+};
+
+function getShichuTsuhen(dayGan, targetGan) {
+  if (!dayGan || !targetGan || targetGan === '不明') return '不明';
+  const sanmeiStar = getTenStar(dayGan, targetGan);
+  return SHICHU_TEN_STAR_MAP[sanmeiStar] || '';
+}
+
+function getShichuJuniun(dayGan, zhi) {
+  if (!dayGan || !zhi || zhi === '不明') return '不明';
+  const sanmeiStar = getTwelveStar(dayGan, zhi);
+  return SHICHU_TWELVE_STAR_MAP[sanmeiStar] || '';
+}
+// ----------------------------
+
 export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTimeUnknown) {
   let h = isTimeUnknown ? 12 : parseInt(_hour, 10) || 12;
   let m = isTimeUnknown ? 0 : parseInt(_minute, 10) || 0;
@@ -106,6 +134,60 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
   const belly = getTenStar(dayGan, dayGan); // 本来の計算が必要
   const leftFoot = getTwelveStar(dayGan, dayZhi); // 晩年期
 
+  // 四柱推命（命式）の算出
+  const yearHideGan = eightChar.getYearHideGan();
+  const monthHideGan = eightChar.getMonthHideGan();
+  const dayHideGan = eightChar.getDayHideGan();
+  const timeHideGan = isTimeUnknown ? [] : eightChar.getTimeHideGan();
+  
+  const yearMainZoukan = yearHideGan.slice(-1)[0] || '';
+  const monthMainZoukan = monthHideGan.slice(-1)[0] || '';
+  const dayMainZoukan = dayHideGan.slice(-1)[0] || '';
+  const timeMainZoukan = isTimeUnknown ? '' : (timeHideGan.slice(-1)[0] || '');
+
+  const shichuPillars = [
+    {
+      label: '時柱',
+      meaning: '晩年期・子供・結果',
+      kan: isTimeUnknown ? '不明' : timeGan,
+      tenTsuhen: isTimeUnknown ? '不明' : getShichuTsuhen(dayGan, timeGan),
+      shi: isTimeUnknown ? '不明' : timeZhi,
+      zoukan: isTimeUnknown ? '不明' : timeMainZoukan,
+      chiTsuhen: isTimeUnknown ? '不明' : getShichuTsuhen(dayGan, timeMainZoukan),
+      juniun: isTimeUnknown ? '不明' : getShichuJuniun(dayGan, timeZhi),
+    },
+    {
+      label: '日柱',
+      meaning: '自分自身・配偶者・プライベート',
+      kan: dayGan,
+      tenTsuhen: '日主', // 日干は自分自身
+      shi: dayZhi,
+      zoukan: dayMainZoukan,
+      chiTsuhen: getShichuTsuhen(dayGan, dayMainZoukan),
+      juniun: getShichuJuniun(dayGan, dayZhi),
+    },
+    {
+      label: '月柱',
+      meaning: '社会性・仕事・中年期',
+      kan: monthGan,
+      tenTsuhen: getShichuTsuhen(dayGan, monthGan),
+      shi: monthZhi,
+      zoukan: monthMainZoukan,
+      chiTsuhen: getShichuTsuhen(dayGan, monthMainZoukan),
+      juniun: getShichuJuniun(dayGan, monthZhi),
+    },
+    {
+      label: '年柱',
+      meaning: 'ルーツ・親・初年期',
+      kan: yearGan,
+      tenTsuhen: getShichuTsuhen(dayGan, yearGan),
+      shi: yearZhi,
+      zoukan: yearMainZoukan,
+      chiTsuhen: getShichuTsuhen(dayGan, yearMainZoukan),
+      juniun: getShichuJuniun(dayGan, yearZhi),
+    }
+  ];
+
   // 大運の取得
   const daYunList = yun.getDaYun();
   const daYunArray = daYunList.map(dy => {
@@ -118,7 +200,9 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
       year: dy.getStartYear(),
       ganzhi: gz,
       tenStar: getTenStar(dayGan, gan),
-      twelveStar: getTwelveStar(dayGan, zhi)
+      twelveStar: getTwelveStar(dayGan, zhi),
+      shichuTenStar: getShichuTsuhen(dayGan, gan),
+      shichuTwelveStar: getShichuJuniun(dayGan, zhi)
     };
   }).slice(0, 10); // 10個取得
 
@@ -135,7 +219,9 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
           year: currentYear + i,
           ganzhi: gz,
           tenStar: getTenStar(dayGan, gan),
-          twelveStar: getTwelveStar(dayGan, zhi)
+          twelveStar: getTwelveStar(dayGan, zhi),
+          shichuTenStar: getShichuTsuhen(dayGan, gan),
+          shichuTwelveStar: getShichuJuniun(dayGan, zhi)
       });
   }
 
@@ -202,6 +288,7 @@ export function calculateMoushiki(year, month, day, _hour, _minute, gender, isTi
       timeZoukan: isTimeUnknown ? '不明' : eightChar.getTimeHideGan().join('・')
     },
     tenchuusatsu: tenShenZhi,
+    shichu: shichuPillars,
     youSen: {
       leftShoulder, head, leftHand, chest, rightHand, leftFoot, belly, rightFoot
     },

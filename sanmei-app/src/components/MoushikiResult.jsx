@@ -6,7 +6,7 @@ import {
 export default function MoushikiResult({ result }) {
   if (!result) return null;
 
-  const { inSen, youSen, tenchuusatsu, daYun, niuNian, monthlyEnergy } = result;
+  const { inSen, youSen, tenchuusatsu, shichu, daYun, niuNian, monthlyEnergy } = result;
 
   return (
     <div className="result-section">
@@ -18,23 +18,39 @@ export default function MoushikiResult({ result }) {
         </p>
         <div className="grid-4" style={{ gap: '1rem' }}>
           {[
-            { label: '時柱', char: inSen.time || '不明', gogyo: inSen.timeGogyo, zoukan: inSen.timeZoukan },
-            { label: '日柱', char: inSen.day, gogyo: inSen.dayGogyo, zoukan: inSen.dayZoukan },
-            { label: '月柱', char: inSen.month, gogyo: inSen.monthGogyo, zoukan: inSen.monthZoukan },
-            { label: '年柱', char: inSen.year, gogyo: inSen.yearGogyo, zoukan: inSen.yearZoukan }
+            { label: '時柱', char: inSen.time || '不明', gogyo: inSen.timeGogyo, zoukan: inSen.timeZoukan, shichu: shichu.find(s => s.label === '時柱') },
+            { label: '日柱', char: inSen.day, gogyo: inSen.dayGogyo, zoukan: inSen.dayZoukan, shichu: shichu.find(s => s.label === '日柱') },
+            { label: '月柱', char: inSen.month, gogyo: inSen.monthGogyo, zoukan: inSen.monthZoukan, shichu: shichu.find(s => s.label === '月柱') },
+            { label: '年柱', char: inSen.year, gogyo: inSen.yearGogyo, zoukan: inSen.yearZoukan, shichu: shichu.find(s => s.label === '年柱') }
           ].map((col, idx) => (
             <div key={idx} className="card kanshi-box">
               <span className="kanshi-label">{col.label}</span>
               <span className="kanshi-char">{col.char}</span>
               {col.char !== '不明' && (
-                <div className="kanshi-details" style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--text-light)', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '0.5rem' }}>
+                <div className="kanshi-details" style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--text-light)', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '0.5rem', width: '100%' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
                     <span>五行:</span>
                     <span style={{color: 'var(--accent-blue)'}}>{col.gogyo?.gan} / {col.gogyo?.zhi}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                     <span>蔵干:</span>
                     <span style={{color: 'var(--accent-gold)'}}>{col.zoukan}</span>
+                  </div>
+
+                  {/* 四柱推命 */}
+                  <div style={{ borderTop: '1px dashed rgba(255,255,255,0.2)', paddingTop: '0.4rem', marginTop: '0.2rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                      <span>天通変:</span>
+                      <span style={{color: 'var(--accent-blue)'}}>{col.shichu?.tenTsuhen}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                      <span>地通変:</span>
+                      <span style={{color: 'var(--accent-gold)'}}>{col.shichu?.chiTsuhen}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>十二運:</span>
+                      <span style={{color: 'var(--text-light)'}}>{col.shichu?.juniun}</span>
+                    </div>
                   </div>
                 </div>
               )}
@@ -125,8 +141,8 @@ export default function MoushikiResult({ result }) {
                 <th style={{ padding: '8px' }}>年齢</th>
                 <th style={{ padding: '8px' }}>年</th>
                 <th style={{ padding: '8px' }}>干支</th>
-                <th style={{ padding: '8px' }}>主星</th>
-                <th style={{ padding: '8px' }}>従星</th>
+                <th style={{ padding: '8px' }}>通変星<br/><span style={{fontSize: '0.7em', fontWeight: 'normal', color: 'var(--text-light)'}}>(主星)</span></th>
+                <th style={{ padding: '8px' }}>十二運<br/><span style={{fontSize: '0.7em', fontWeight: 'normal', color: 'var(--text-light)'}}>(従星)</span></th>
               </tr>
             </thead>
             <tbody>
@@ -135,8 +151,14 @@ export default function MoushikiResult({ result }) {
                   <td style={{ padding: '8px' }}>{yun.startAge}〜{yun.endAge}歳</td>
                   <td style={{ padding: '8px' }}>{yun.year}〜</td>
                   <td style={{ padding: '8px' }}>{yun.ganzhi}</td>
-                  <td style={{ padding: '8px', color: 'var(--accent-gold)' }}>{yun.tenStar}</td>
-                  <td style={{ padding: '8px', color: 'var(--accent-blue)' }}>{yun.twelveStar}</td>
+                  <td style={{ padding: '8px', color: 'var(--accent-gold)' }}>
+                    {yun.shichuTenStar}<br/>
+                    <span style={{fontSize: '0.8em', color: 'var(--text-light)'}}>({yun.tenStar})</span>
+                  </td>
+                  <td style={{ padding: '8px', color: 'var(--accent-blue)' }}>
+                    {yun.shichuTwelveStar}<br/>
+                    <span style={{fontSize: '0.8em', color: 'var(--text-light)'}}>({yun.twelveStar})</span>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -150,8 +172,8 @@ export default function MoushikiResult({ result }) {
               <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
                 <th style={{ padding: '8px' }}>年</th>
                 <th style={{ padding: '8px' }}>干支</th>
-                <th style={{ padding: '8px' }}>主星</th>
-                <th style={{ padding: '8px' }}>従星</th>
+                <th style={{ padding: '8px' }}>通変星<br/><span style={{fontSize: '0.7em', fontWeight: 'normal', color: 'var(--text-light)'}}>(主星)</span></th>
+                <th style={{ padding: '8px' }}>十二運<br/><span style={{fontSize: '0.7em', fontWeight: 'normal', color: 'var(--text-light)'}}>(従星)</span></th>
               </tr>
             </thead>
             <tbody>
@@ -159,8 +181,14 @@ export default function MoushikiResult({ result }) {
                 <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                   <td style={{ padding: '8px' }}>{nian.year}年</td>
                   <td style={{ padding: '8px' }}>{nian.ganzhi}</td>
-                  <td style={{ padding: '8px', color: 'var(--accent-gold)' }}>{nian.tenStar}</td>
-                  <td style={{ padding: '8px', color: 'var(--accent-blue)' }}>{nian.twelveStar}</td>
+                  <td style={{ padding: '8px', color: 'var(--accent-gold)' }}>
+                    {nian.shichuTenStar}<br/>
+                    <span style={{fontSize: '0.8em', color: 'var(--text-light)'}}>({nian.tenStar})</span>
+                  </td>
+                  <td style={{ padding: '8px', color: 'var(--accent-blue)' }}>
+                    {nian.shichuTwelveStar}<br/>
+                    <span style={{fontSize: '0.8em', color: 'var(--text-light)'}}>({nian.twelveStar})</span>
+                  </td>
                 </tr>
               ))}
             </tbody>
